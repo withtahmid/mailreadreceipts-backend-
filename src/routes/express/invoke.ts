@@ -8,13 +8,11 @@ router.get("/:emailId", async (req: Request, res: Response) => {
     const ua = useragent.parse(req.headers['user-agent']);
     console.log(emailId)
     const browser = ua.family ?? "Unknown";
-    const os = ua.os.family ?? "Unknown";
-    const device = ua.device.family ?? "Unknown";
     const time = Date.now();
     try {
         const email = await Email.findById(emailId);
         if(email){
-            email.invokes.push({time, os, browser, device });
+            email.invokes.push({time, browser });
             email.save();
         }
     } catch (error) {

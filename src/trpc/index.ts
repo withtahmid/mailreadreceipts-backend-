@@ -2,8 +2,6 @@ import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { authenticateToken } from "../auth/jwt";
 import User, { UserSchema } from "../models/userModel";
-
-
 export const createContext = async(opts : CreateExpressContextOptions) => {
     const { req } = opts;
     try {

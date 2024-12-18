@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "generate-types": "tsc --emitDeclarationOnly --declaration --outDir dist/types"
+    "generate-types": "tsc --emitDeclarationOnly --declaration --outDir ../frontend/src/backendTypes"
   },
   "keywords": [],
   "author": "",

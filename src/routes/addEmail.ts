@@ -18,9 +18,8 @@ const addEmailProcedure = verifiedProcedure
         user.emails.push(newEmail);
         await user.save()
     } catch (error) {
-        throw new TRPCError({code: "INTERNAL_SERVER_ERROR"})
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
     }
-    return { _id: newEmail._id as string, label, createTime: newEmail.createTime, invokes: [] };
-})
-
+    return newEmail;
+});
 export default addEmailProcedure;

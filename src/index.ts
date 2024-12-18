@@ -10,7 +10,6 @@ import User from "./models/userModel";
 import Email from "./models/emailModel";
 dotenv.config();
 
-
 const clearDB = async () =>{
     await User.deleteMany({});
     await Email.deleteMany({});
@@ -27,18 +26,9 @@ const clearDB = async () =>{
     }    
 })();
 const app = express();
-
 app.use(cors());
-
 const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-    res.status(200).json({message: "Hacker?"});
-})
-
-app.use("/invoke", invoke)
+app.use("/", invoke)
 app.use("/trpc", createExpressMiddleware({ router: appRouter, createContext: createContext }))
-
 app.listen(PORT, () => console.log(`Listenig on port: ${PORT}`));
-
 export default app;

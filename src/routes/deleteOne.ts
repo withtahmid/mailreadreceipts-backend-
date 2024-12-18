@@ -9,7 +9,7 @@ const deleteEmailProcedure = verifiedProcedure
     const { _id } = input;
     try {
         await Email.findByIdAndDelete(_id);
-        user.emails = user.emails.filter(e => e._id !== _id);
+        user.emails = user.emails.filter(e => e._id.toString() !== _id);
         await user.save()
     } catch (error) {
         throw new TRPCError({code: "INTERNAL_SERVER_ERROR"})
