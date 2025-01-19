@@ -18,7 +18,11 @@ dotenv.config();
     }    
 })();
 
-const invoke = async(req:Request) => {
+const app = express();
+app.use(cors());
+const PORT = process.env.PORT || 3000;
+
+app.get("/:emailId", async (req: Request, res: Response) => {
     const emailId = req.params.emailId;
     const ua = useragent.parse(req.headers['user-agent']);
     const browser = ua.family ?? "Unknown";
@@ -26,25 +30,12 @@ const invoke = async(req:Request) => {
     try {
         const email = await ReceiptEmail.findById(emailId);
         if(email){
-            email.invokes.push({time, browser });
+            email.invokes.push({ time, browser });
             email.newInvokeCount += 1;
             email.save();
         }
     } catch (error) {
         console.error(error)
-    }
-    
-}
-
-const app = express();
-app.use(cors());
-const PORT = process.env.PORT || 3000;
-
-app.get("/:emailId", async (req: Request, res: Response) => {
-    try {
-        invoke(req);
-    } catch (error) {
-        console.error("Error fetching image:", error);
     }
     try {
         const imageResponse = await axios.get(
