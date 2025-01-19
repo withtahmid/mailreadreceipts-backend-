@@ -27,6 +27,7 @@ const invoke = async(req:Request) => {
         const email = await ReceiptEmail.findById(emailId);
         if(email){
             email.invokes.push({time, browser });
+            email.newInvokeCount += 1;
             email.save();
         }
     } catch (error) {
