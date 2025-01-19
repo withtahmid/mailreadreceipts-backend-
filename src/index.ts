@@ -1,20 +1,12 @@
-import express from "express"
+import express, { Request, Response } from "express";
 import cors from "cors"
 import dotenv from "dotenv"
-import { createExpressMiddleware} from "@trpc/server/adapters/express"
-import { appRouter } from "./routes";
-import { createContext } from "./trpc";
 import mongoose from "mongoose";
-import invoke from "./routes/express/invoke";
-import User from "./models/userModel";
-import Email from "./models/emailModel";
-dotenv.config();
+import useragent from "useragent";
+import axios from "axios";
+import ReceiptEmail from "./emailModel";
 
-const clearDB = async () =>{
-    await User.deleteMany({});
-    await Email.deleteMany({});
-    console.log("!!! DB Cleared !!!");
-} 
+dotenv.config();
 
 (async() => {
     try {
@@ -25,10 +17,45 @@ const clearDB = async () =>{
         process.exit(1);
     }    
 })();
+
+const invoke = async(req:Request) => {
+    const emailId = req.params.emailId;
+    const ua = useragent.parse(req.headers['user-agent']);
+    const browser = ua.family ?? "Unknown";
+    const time = Date.now();
+    try {
+        const email = await ReceiptEmail.findById(emailId);
+        if(email){
+            email.invokes.push({time, browser });
+            email.save();
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    
+}
+
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000;
-app.use("/", invoke)
-app.use("/trpc", createExpressMiddleware({ router: appRouter, createContext: createContext }))
+
+app.get("/:emailId", async (req: Request, res: Response) => {
+    try {
+        invoke(req);
+    } catch (error) {
+        console.error("Error fetching image:", error);
+    }
+    try {
+        const imageResponse = await axios.get(
+            "https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png",
+            { responseType: "stream" }
+        );
+        res.setHeader("Content-Type", "image/png");
+        imageResponse.data.pipe(res);
+    } catch (error) {
+        console.error("Error fetching image:", error);
+        res.status(200).send();
+    }
+});
 app.listen(PORT, () => console.log(`Listenig on port: ${PORT}`));
 export default app;
